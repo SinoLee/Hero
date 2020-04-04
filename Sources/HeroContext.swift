@@ -161,13 +161,11 @@ extension HeroContext {
     case .layerRender:
       snapshot = view.slowSnapshotView()
     case .noSnapshot:
-      if let superview = view.superview, superview != container {
-        if superviewToNoSnapshotSubviewMap[superview] == nil {
-          superviewToNoSnapshotSubviewMap[superview] = []
+      if view.superview != container {
+        if superviewToNoSnapshotSubviewMap[view.superview!] == nil {
+          superviewToNoSnapshotSubviewMap[view.superview!] = []
         }
-        if let index = superview.subviews.index(of: view) {
-          superviewToNoSnapshotSubviewMap[superview]!.append((index, view))
-        }
+        superviewToNoSnapshotSubviewMap[view.superview!]!.append((view.superview!.subviews.firstIndex(of: view)!, view))
       }
       snapshot = view
     case .optimized:
@@ -270,7 +268,7 @@ extension HeroContext {
      let pairedView = pairedView(for: view),
      let pairedSnapshot = snapshotViews[pairedView],
      let siblingViews = pairedView.superview?.subviews,
-     let index = siblingViews.index(of: pairedView) {
+      let index = siblingViews.firstIndex(of: pairedView) {
       let nextSiblings = siblingViews[index+1..<siblingViews.count]
       containerView.addSubview(pairedSnapshot)
       containerView.addSubview(snapshot)
